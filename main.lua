@@ -46,13 +46,20 @@ function run_algorithm()
 	local mapped_image_data = unmapped_image_data:clone()
 	local algorithm = require(algorithm_name)
 
-	algorithm.get_mean_value = get_mean_value_calculator(unmapped_image_data) -- this runs before the algorithm
+	set_helper_functions_on_algorithm(algorithm, unmapped_image_data)
 
 	mapped_image_data:mapPixel(algorithm.mapping_algorithm)
 	image = love.graphics.newImage(mapped_image_data)
 end
 
-function get_mean_value_calculator(image_data)
+function set_helper_functions_on_algorithm(algorithm, image_data)
+	algorithm.get_mean_value = get_mean_value_calculator(image_data) -- this runs before the algorithm
+	algorithm.measure_color = function(x, y) return image_data:getPixel(x, y) end -- this uses the scaled picture, so that it will be easy to get adjacent pixels, to the pixel being transformed
+	algorithm.get_scaled_height = function() return image_data:getHeight() end
+	algorithm.get_scaled_width = function() return image_data:getWidth() end
+end
+
+function get_mean_value_calculator(image_data) -- this uses the unscaled picture
 	local mean_r = 0
 	local mean_g = 0
 	local mean_b = 0

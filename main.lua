@@ -16,12 +16,20 @@ end
 
 function love.draw(delta_time)
 	love.graphics.draw(image)
+	r, g, b, a = love.graphics.getColor()
+	love.graphics.setColor(0,0.5,0.25)
+	love.graphics.printf("press s to save, be aware that the image might be saved in one of Love:s directories", 
+		screen_width-150, 10, 140)
+	love.graphics.setColor(r,g,b,a)
 end
 
 function love.keypressed(key)
 	if key == "escape" then
-      love.event.quit()
-   end
+		love.event.quit()
+   	end
+	if key == "s" then
+   		mapped_image_data:encode("png", string.gsub(picture_name, ".jpg", "").."_"..algorithm_name..".png")--only handles jpg in and png out
+	end
 end
 
 function load_image()
@@ -43,7 +51,7 @@ end
 
 function run_algorithm()
 	local unmapped_image_data = canvas:newImageData()
-	local mapped_image_data = unmapped_image_data:clone()
+	mapped_image_data = unmapped_image_data:clone()
 	local algorithm = require(algorithm_name)
 
 	set_helper_functions_on_algorithm(algorithm, unmapped_image_data)

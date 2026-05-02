@@ -14,3 +14,7 @@ You can implement and test your own dithering algorithms, it's only a few lines 
 
 In the dithering algorithms, there might be a need to do other more advanced calculations, than the api can handle. I will try to inject useful functions into the running algorithms, from the main file, for more advanced calculations.
 
+The algorithm that seems to work best currently is pseudorandom_with_contrast.
+run it with:
+$ love . room.jpg pseudorandom_with_contrast
+

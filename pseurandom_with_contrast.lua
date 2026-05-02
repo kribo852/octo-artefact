@@ -95,14 +95,13 @@ local function calculate_contrast_tresholds()
     table.sort(samples)
 
     pseudorandom.threshold = {}
-    pseudorandom.threshold[1] = samples[2000]
-    pseudorandom.threshold[2] = samples[4000]
-    pseudorandom.threshold[3] = samples[6000]
-    pseudorandom.threshold[4] = samples[7000]
+    pseudorandom.threshold[1] = samples[2500]
+    pseudorandom.threshold[2] = samples[5000]
+    pseudorandom.threshold[3] = samples[7500]
 end
 
 local function calc_rng_constants(x, y) -- calculate from contrast to neighbouring pixels
-    local rng_constants = {{61,447},{83,127},{129,51},{111,91}}
+    local rng_constants = {{61,447},{83,127},{129,51}}
     local y_rng_constant = 131
     local x_rng_constant = 223
     local x_contrast = calc_x_contrast(x,y)

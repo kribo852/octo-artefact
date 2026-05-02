@@ -79,6 +79,39 @@ local function calc_y_contrast(x, y)
     return contrast
 end
 
+local function calc_rng_constants(x, y) -- calculate from contrast to neighbouring pixels
+    local y_rng_constant = 21
+    local x_rng_constant = 23
+    local x_contrast = calc_x_contrast(x,y)
+    local y_contrast = calc_y_contrast(x,y)
+
+    if x_contrast > 0.05 then
+        x_rng_constant = 37
+    end
+
+    if y_contrast > 0.05 then
+        y_rng_constant = 33
+    end
+
+    if x_contrast > 0.25 then
+        x_rng_constant = 47
+    end
+
+    if y_contrast > 0.25 then
+        y_rng_constant = 61
+    end
+
+    if x_contrast > 0.5 then
+        x_rng_constant = 83
+    end
+
+    if y_contrast > 0.5 then
+        y_rng_constant = 127
+    end
+
+    return x_rng_constant, y_rng_constant
+end
+
 function pseudorandom.mapping_algorithm(x, y, r, g, b, a)
 
     --get min values rgb, calculate max rgb values, do this in a singleton
@@ -86,16 +119,7 @@ function pseudorandom.mapping_algorithm(x, y, r, g, b, a)
     local max_r, max_g, max_b = get_max_rgb()
     
     --calculate constants for the random function, 2-4 different sets depending on how much contrast/frequency there is
-    local x_rng_constant = 21
-    local y_rng_constant = 23
-
-    if calc_x_contrast(x,y) > 0.1 then
-        x_rng_constant = 47
-    end
-
-    if calc_y_contrast(x,y) > 0.1 then
-        y_rng_constant = 51
-    end 
+    local x_rng_constant, y_rng_constant = calc_rng_constants(x, y) 
 
     local pseudo_random_number = mod((x_rng_constant*x + y_rng_constant*y), 301)/301
 

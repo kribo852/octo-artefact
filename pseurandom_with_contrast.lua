@@ -78,46 +78,6 @@ local function calc_y_contrast(x, y)
 
     return contrast
 end
---calculate the contrast thresholds for different random functions 
-local function calculate_contrast_tresholds()
-    if pseudorandom.threshold then
-        return
-    end
-
-    local samples = {}
-
-    for i=1,10000 do
-        local x_contrast = calc_x_contrast(love.math.random(pseudorandom.get_scaled_width())-1,love.math.random(pseudorandom.get_scaled_height())-1)
-        local y_contrast = calc_y_contrast(love.math.random(pseudorandom.get_scaled_width())-1,love.math.random(pseudorandom.get_scaled_height())-1)
-        table.insert(samples, (x_contrast + y_contrast)/2)
-    end
-
-    table.sort(samples)
-
-    pseudorandom.threshold = {}
-    pseudorandom.threshold[1] = samples[2500]
-    pseudorandom.threshold[2] = samples[5000]
-    pseudorandom.threshold[3] = samples[7500]
-end
-
-local function calc_rng_constants(x, y) -- calculate from contrast to neighbouring pixels
-    local rng_constants = {{61,447},{83,127},{129,51}}
-    local y_rng_constant = 131
-    local x_rng_constant = 223
-    local x_contrast = calc_x_contrast(x,y)
-    local y_contrast = calc_y_contrast(x,y)
-
-    for i,val in ipairs(pseudorandom.threshold) do
-        if x_contrast > val then
-            x_rng_constant = rng_constants[i][1]
-        end
-        if y_contrast > val then
-            y_rng_constant = rng_constants[i][2]
-        end
-    end
-
-    return x_rng_constant, y_rng_constant
-end
 
 function pseudorandom.mapping_algorithm(x, y, r, g, b, a)
 
@@ -125,12 +85,10 @@ function pseudorandom.mapping_algorithm(x, y, r, g, b, a)
     local min_r, min_g, min_b = get_min_rgb()
     local max_r, max_g, max_b = get_max_rgb()
 
-    calculate_contrast_tresholds()
-    
-    --calculate constants for the random function, which depends on how much contrast/frequency there is
-    local x_rng_constant, y_rng_constant = calc_rng_constants(x, y) 
+    local x_contrast = calc_x_contrast(x,y)
+    local y_contrast = calc_y_contrast(x,y) 
 
-    local pseudo_random_number = mod((x_rng_constant*x + y_rng_constant*y), 301)/301
+    local pseudo_random_number = mod((123*x + 223*y) + math.min(250*(x_contrast+y_contrast), 750), 301)/301
 
     --if the measured value is more than the random number between 0-1 times the max vector length, then light the pixel
     if pseudo_random_number*vector_length(max_r-min_r, max_g-min_g, max_b-min_b) < 
